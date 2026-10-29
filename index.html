@@ -3,26 +3,45 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HealthBite</title>
-    <!-- Favicon using logo.png -->
-    <link rel="icon" type="image/png" href="logo.png">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HealthBite — Food & Health Guidance</title>
+
+    <meta name="description"
+        content="HealthBite helps you understand whether a food is suitable for a specific health condition.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
         :root {
-            --bg-color: #ffffff;
-            --text-main: #202123;
-            --text-muted: #6e6e80;
-            --border-color: #d9d9e3;
-            --input-bg: #f4f4f5;
-            --btn-bg: #202123;
-            --btn-hover: #2f3037;
-            --bubble-user: #f4f4f5;
-            --bubble-ai: #ffffff;
+            --green: #15803d;
+            --green-dark: #166534;
+            --green-light: #f0fdf4;
+            --green-soft: #dcfce7;
+
+            --black: #111827;
+            --gray-900: #1f2937;
+            --gray-700: #374151;
+            --gray-600: #4b5563;
+            --gray-500: #6b7280;
+            --gray-400: #9ca3af;
+            --gray-300: #d1d5db;
+            --gray-200: #e5e7eb;
+            --gray-100: #f3f4f6;
+            --gray-50: #f9fafb;
+
+            --white: #ffffff;
+
+            --danger: #dc2626;
+            --warning: #d97706;
+
+            --sidebar-width: 250px;
+            --radius: 16px;
         }
 
         * {
@@ -31,286 +50,1080 @@
             padding: 0;
         }
 
+        html,
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            width: 100%;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: "DM Sans", sans-serif;
+            background: var(--white);
+            color: var(--black);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .app {
+            min-height: 100vh;
             display: flex;
-            flex-direction: column;
+        }
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        .sidebar {
+            width: var(--sidebar-width);
             height: 100vh;
-            height: 100dvh;
-            /* Mobile viewport height fix */
-            overflow: hidden;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        /* Top Header */
-        header {
-            padding: 14px 20px;
-            border-bottom: 1px solid var(--border-color);
-            background-color: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .header-content {
-            width: 100%;
-            max-width: 768px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-logo {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .header-text h1 {
-            font-size: 16px;
-            font-weight: 600;
-            letter-spacing: -0.3px;
-        }
-
-        .header-text p {
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-top: 1px;
-        }
-
-        /* Chat Stream Container */
-        .chat-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 16px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid var(--gray-200);
+            background: var(--white);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            -webkit-overflow-scrolling: touch;
+            padding: 22px 14px;
+            z-index: 100;
         }
 
-        .chat-width-limiter {
-            width: 100%;
-            max-width: 768px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        /* Message Row Animation */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message-row {
-            display: flex;
-            width: 100%;
-            gap: 12px;
-            font-size: 14px;
-            line-height: 1.5;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .message-row.user {
-            justify-content: flex-end;
-        }
-
-        .message-bubble {
-            max-width: 88%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            word-break: break-word;
-        }
-
-        .message-row.user .message-bubble {
-            background-color: var(--bubble-user);
-            color: var(--text-main);
-            border-top-right-radius: 2px;
-            font-weight: 500;
-        }
-
-        .message-row.ai .message-bubble {
-            background-color: var(--bubble-ai);
-            color: var(--text-main);
-            width: 100%;
-            border: 1px solid var(--border-color);
-            border-top-left-radius: 2px;
-        }
-
-        .message-bubble img {
-            max-width: 100%;
-            max-height: 160px;
-            border-radius: 6px;
-            margin-top: 8px;
-            display: block;
-        }
-
-        /* Bottom Input Wrapper Area */
-        .input-area-wrapper {
-            padding: 12px 16px 20px 16px;
-            display: flex;
-            justify-content: center;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 30%);
-            flex-shrink: 0;
-        }
-
-        .input-inner-container {
-            width: 100%;
-            max-width: 768px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        /* Preview Badge */
-        .preview-badge {
-            display: none;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-muted);
-            background: var(--input-bg);
-            padding: 6px 10px;
-            border-radius: 6px;
-            width: fit-content;
-            border: 1px solid var(--border-color);
-            animation: fadeIn 0.2s ease-out;
-        }
-
-        .preview-badge img {
-            width: 20px;
-            height: 20px;
-            object-fit: cover;
-            border-radius: 3px;
-        }
-
-        /* Unified ChatGPT Input Bar */
-        .chat-input-bar {
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 8px 12px;
+        .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-            transition: border-color 0.2s, background-color 0.2s;
+            gap: 11px;
+            padding: 4px 10px 25px;
         }
 
-        .chat-input-bar:focus-within {
-            border-color: #b4b4b4;
-            background-color: #ffffff;
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
-        }
-
-        .upload-pin {
-            color: var(--text-muted);
-            font-size: 16px;
-            cursor: pointer;
-            padding: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: color 0.2s;
-            flex-shrink: 0;
-        }
-
-        .upload-pin:hover {
-            color: var(--text-main);
-        }
-
-        .inline-field {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            color: var(--text-main);
-            padding: 6px 0;
-            min-width: 0;
-        }
-
-        .inline-field::placeholder {
-            color: var(--text-muted);
-        }
-
-        .field-divider {
-            width: 1px;
-            height: 20px;
-            background-color: var(--border-color);
-            flex-shrink: 0;
-        }
-
-        .send-arrow-btn {
-            background-color: var(--btn-bg);
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            background: var(--green);
             color: white;
-            border: none;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
-            flex-shrink: 0;
+            font-size: 17px;
         }
 
-        .send-arrow-btn:hover {
-            background-color: var(--btn-hover);
+        .brand-name {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
         }
 
-        .send-arrow-btn:active {
-            transform: scale(0.95);
+        .brand-name span {
+            color: var(--green);
         }
 
-        .send-arrow-btn:disabled {
-            background-color: #d9d9e3;
-            cursor: not-allowed;
+        .new-chat-btn {
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--black);
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            font-weight: 600;
+            margin-bottom: 18px;
+            transition: .2s;
         }
 
-        .footer-note {
-            font-size: 10px;
-            color: var(--text-muted);
+        .new-chat-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-light);
+        }
+
+        .nav-title {
+            color: var(--gray-400);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            padding: 0 11px 8px;
+        }
+
+        .nav {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            color: var(--gray-600);
+            height: 43px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 12px;
+            font-weight: 500;
+            text-align: left;
+            transition: .2s;
+        }
+
+        .nav-item i {
+            width: 19px;
             text-align: center;
         }
 
-        /* Mobile Screen Adjustments */
-        @media (max-width: 480px) {
-            header {
-                padding: 10px 14px;
+        .nav-item:hover {
+            background: var(--gray-50);
+            color: var(--black);
+        }
+
+        .nav-item.active {
+            color: var(--green-dark);
+            background: var(--green-light);
+            font-weight: 600;
+        }
+
+        .sidebar-bottom {
+            margin-top: auto;
+        }
+
+        .profile-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 10px 3px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: var(--green-soft);
+            color: var(--green-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .profile-text strong {
+            display: block;
+            font-size: 13px;
+        }
+
+        .profile-text small {
+            color: var(--gray-500);
+            font-size: 11px;
+        }
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        .main {
+            width: calc(100% - var(--sidebar-width));
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar {
+            height: 68px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, .95);
+            backdrop-filter: blur(12px);
+            z-index: 50;
+        }
+
+        .page-title {
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--gray-500);
+            font-size: 12px;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--green);
+            border-radius: 50%;
+        }
+
+        /* =========================================================
+           CHAT
+        ========================================================= */
+
+        .chat-page {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            width: min(850px, calc(100% - 40px));
+            margin: 0 auto;
+            flex: 1;
+            padding: 55px 0 170px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome-icon {
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 18px;
+            background: var(--green-light);
+            color: var(--green);
+            border-radius: 17px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 25px;
+        }
+
+        .welcome h1 {
+            font-size: clamp(26px, 4vw, 36px);
+            letter-spacing: -1px;
+            margin-bottom: 10px;
+        }
+
+        .welcome p {
+            max-width: 570px;
+            margin: auto;
+            color: var(--gray-500);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .quick-title {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .quick-chips {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 35px;
+        }
+
+        .chip {
+            border: 1px solid var(--gray-200);
+            background: var(--white);
+            color: var(--gray-700);
+            padding: 8px 13px;
+            border-radius: 999px;
+            font-size: 12px;
+            transition: .2s;
+        }
+
+        .chip:hover {
+            border-color: var(--green);
+            color: var(--green-dark);
+            background: var(--green-light);
+        }
+
+        /* =========================================================
+           INPUT
+        ========================================================= */
+
+        .input-section {
+            border: 1px solid var(--gray-200);
+            border-radius: 18px;
+            background: var(--white);
+            box-shadow: 0 8px 30px rgba(17, 24, 39, .06);
+            overflow: hidden;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .field {
+            padding: 18px 20px;
+        }
+
+        .field+.field {
+            border-left: 1px solid var(--gray-200);
+        }
+
+        .field-label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--gray-500);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 9px;
+        }
+
+        .field-label i {
+            color: var(--green);
+        }
+
+        .field input {
+            width: 100%;
+            border: 0;
+            outline: 0;
+            font-size: 16px;
+            color: var(--black);
+            background: transparent;
+        }
+
+        .field input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .input-footer {
+            border-top: 1px solid var(--gray-200);
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .image-tools {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border: 0;
+            background: transparent;
+            color: var(--gray-500);
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
+
+        .icon-btn:hover {
+            background: var(--gray-100);
+            color: var(--black);
+        }
+
+        .send-btn {
+            width: 39px;
+            height: 39px;
+            border: 0;
+            border-radius: 11px;
+            background: var(--green);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s;
+        }
+
+        .send-btn:hover {
+            background: var(--green-dark);
+        }
+
+        .send-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .image-preview {
+            display: none;
+            margin: 0 14px 12px;
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--gray-200);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 22px;
+            height: 22px;
+            border: 0;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, .7);
+            color: white;
+            font-size: 11px;
+        }
+
+        .disclaimer {
+            text-align: center;
+            color: var(--gray-400);
+            font-size: 10px;
+            margin-top: 13px;
+        }
+
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
+
+        .messages {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .message {
+            display: flex;
+            gap: 13px;
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 34px;
+            height: 34px;
+            flex: 0 0 34px;
+            border-radius: 10px;
+            background: var(--green-light);
+            color: var(--green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+        }
+
+        .user .message-avatar {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            order: 2;
+        }
+
+        .message-content {
+            max-width: 720px;
+            min-width: 0;
+        }
+
+        .message-name {
+            font-size: 11px;
+            color: var(--gray-500);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .user .message-name {
+            text-align: right;
+        }
+
+        .message-bubble {
+            line-height: 1.7;
+            font-size: 14px;
+        }
+
+        .user .message-bubble {
+            background: var(--gray-100);
+            padding: 11px 14px;
+            border-radius: 14px;
+        }
+
+        /* =========================================================
+           RESULT CARD
+        ========================================================= */
+
+        .ai-result {
+            border: 1px solid var(--gray-200);
+            border-radius: 17px;
+            overflow: hidden;
+            background: var(--white);
+            box-shadow: 0 5px 20px rgba(17, 24, 39, .04);
+        }
+
+        .food-hero {
+            position: relative;
+            width: 100%;
+            height: 210px;
+            background: var(--gray-100);
+            overflow: hidden;
+        }
+
+        .food-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .food-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top,
+                    rgba(0, 0, 0, .45),
+                    transparent 60%);
+            pointer-events: none;
+        }
+
+        .food-hero-info {
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 14px;
+            z-index: 2;
+            color: white;
+        }
+
+        .food-hero-title {
+            font-size: 21px;
+            font-weight: 700;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, .25);
+        }
+
+        .food-hero-condition {
+            font-size: 12px;
+            margin-top: 2px;
+            opacity: .9;
+        }
+
+        .image-credit {
+            position: absolute;
+            right: 9px;
+            bottom: 7px;
+            z-index: 4;
+            font-size: 9px;
+            color: rgba(255, 255, 255, .82);
+        }
+
+        .image-credit a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .food-hero-placeholder {
+            width: 100%;
+            height: 210px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-400);
+            font-size: 35px;
+            background: var(--gray-50);
+        }
+
+        .image-searching {
+            height: 210px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--gray-400);
+            font-size: 12px;
+            background: var(--gray-50);
+        }
+
+        .result-main {
+            padding: 16px;
+        }
+
+        .result-verdict {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 12px 13px;
+            border-radius: 11px;
+            margin-bottom: 14px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .result-verdict.good {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .result-verdict.moderate {
+            background: #fffbeb;
+            color: #92400e;
+        }
+
+        .result-verdict.limit {
+            background: #fff7ed;
+            color: #9a3412;
+        }
+
+        .result-verdict.avoid {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-bottom: 14px;
+        }
+
+        .result-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 13px;
+            background: var(--white);
+        }
+
+        .result-card.full {
+            grid-column: 1 / -1;
+        }
+
+        .result-card-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--gray-500);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 7px;
+        }
+
+        .result-card-label i {
+            color: var(--green);
+        }
+
+        .result-card p {
+            color: var(--gray-700);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .result-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .result-list li {
+            color: var(--gray-700);
+            font-size: 13px;
+            line-height: 1.55;
+            display: flex;
+            gap: 7px;
+        }
+
+        .result-list li::before {
+            content: "•";
+            color: var(--green);
+            font-weight: 700;
+        }
+
+        .better-option {
+            border: 1px solid var(--green-soft);
+            background: var(--green-light);
+            border-radius: 12px;
+            padding: 13px;
+        }
+
+        .better-option-label {
+            color: var(--green-dark);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            margin-bottom: 6px;
+        }
+
+        .better-option p {
+            color: var(--gray-700);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .result-disclaimer {
+            margin-top: 13px;
+            padding-top: 12px;
+            border-top: 1px solid var(--gray-200);
+            color: var(--gray-400);
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .result-actions {
+            border-top: 1px solid var(--gray-200);
+            padding: 8px;
+            display: flex;
+            gap: 5px;
+        }
+
+        .result-action {
+            border: 0;
+            background: transparent;
+            color: var(--gray-500);
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .result-action:hover {
+            background: var(--gray-100);
+            color: var(--black);
+        }
+
+        /* =========================================================
+           TYPING
+        ========================================================= */
+
+        .typing {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .typing span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--gray-400);
+            animation: typing 1.2s infinite;
+        }
+
+        .typing span:nth-child(2) {
+            animation-delay: .15s;
+        }
+
+        .typing span:nth-child(3) {
+            animation-delay: .3s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: .45;
+            }
+
+            30% {
+                transform: translateY(-4px);
+                opacity: 1;
+            }
+        }
+
+        /* =========================================================
+           OTHER PAGES
+        ========================================================= */
+
+        .content-page {
+            width: min(1000px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 40px 0 100px;
+        }
+
+        .content-page h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .content-page>p {
+            color: var(--gray-500);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .empty-state {
+            text-align: center;
+            border: 1px dashed var(--gray-300);
+            border-radius: 16px;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-state i {
+            font-size: 28px;
+            color: var(--gray-300);
+            margin-bottom: 13px;
+        }
+
+        .history-list,
+        .saved-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .history-item,
+        .saved-item {
+            border: 1px solid var(--gray-200);
+            border-radius: 13px;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .history-info strong,
+        .saved-info strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .history-info span,
+        .saved-info span {
+            color: var(--gray-500);
+            font-size: 12px;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .item-actions button {
+            width: 34px;
+            height: 34px;
+            border: 0;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border-radius: 8px;
+        }
+
+        /* =========================================================
+           SETTINGS
+        ========================================================= */
+
+        .settings-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .settings-row {
+            padding: 17px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .settings-row:last-child {
+            border-bottom: 0;
+        }
+
+        .settings-row strong {
+            font-size: 14px;
+        }
+
+        .settings-row span {
+            display: block;
+            color: var(--gray-500);
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .danger-btn {
+            border: 0;
+            color: var(--danger);
+            background: #fef2f2;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* =========================================================
+           ERROR
+        ========================================================= */
+
+        .api-error {
+            border: 1px solid #fecaca;
+            background: #fef2f2;
+            color: #991b1b;
+            padding: 13px;
+            border-radius: 11px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .api-error code {
+            display: block;
+            margin-top: 7px;
+            padding: 8px;
+            background: rgba(255, 255, 255, .7);
+            border-radius: 7px;
+            font-size: 11px;
+            word-break: break-word;
+        }
+
+        /* =========================================================
+           MOBILE NAV
+        ========================================================= */
+
+        .mobile-nav {
+            display: none;
+        }
+
+        .mobile-nav button {
+            border: 0;
+            background: transparent;
+            color: var(--gray-500);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 10px;
+        }
+
+        .mobile-nav button i {
+            font-size: 16px;
+        }
+
+        .mobile-nav button.active {
+            color: var(--green);
+        }
+
+        /* =========================================================
+           RESPONSIVE
+        ========================================================= */
+
+        @media (max-width: 800px) {
+
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                width: 100%;
+                margin-left: 0;
+                padding-bottom: 70px;
+            }
+
+            .topbar {
+                padding: 0 17px;
+                height: 60px;
             }
 
             .chat-container {
-                padding: 12px 10px;
+                width: calc(100% - 28px);
+                padding-top: 35px;
             }
 
-            .input-area-wrapper {
-                padding: 10px 10px 16px 10px;
+            .welcome {
+                margin-bottom: 30px;
             }
 
-            .chat-input-bar {
-                padding: 6px 10px;
-                border-radius: 14px;
+            .welcome h1 {
+                font-size: 28px;
             }
 
-            .message-bubble {
-                max-width: 92%;
-                padding: 10px 14px;
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .field+.field {
+                border-left: 0;
+                border-top: 1px solid var(--gray-200);
+            }
+
+            .mobile-nav {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 64px;
+                background: rgba(255, 255, 255, .97);
+                backdrop-filter: blur(12px);
+                border-top: 1px solid var(--gray-200);
+                z-index: 200;
+                align-items: center;
+                justify-content: space-around;
+            }
+
+            .content-page {
+                width: calc(100% - 28px);
+                padding-top: 30px;
+            }
+        }
+
+        @media (max-width: 500px) {
+
+            .quick-chips {
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                padding-bottom: 4px;
+            }
+
+            .chip {
+                flex: 0 0 auto;
+            }
+
+            .chat-container {
+                padding-bottom: 120px;
+            }
+
+            .message-content {
+                max-width: calc(100% - 45px);
+            }
+
+            .food-hero,
+            .food-hero-placeholder,
+            .image-searching {
+                height: 165px;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .result-card.full {
+                grid-column: auto;
+            }
+
+            .history-item,
+            .saved-item {
+                align-items: flex-start;
             }
         }
     </style>
@@ -318,205 +1131,2986 @@
 
 <body>
 
-    <!-- Header -->
-    <header>
-        <div class="header-content">
-            <img src="logo.png" alt="HealthBite Logo" class="header-logo">
-            <div class="header-text">
-                <h1>HealthBite</h1>
-            </div>
-        </div>
-    </header>
+    <div class="app">
 
-    <!-- Chat Messages Stream Area -->
-    <div class="chat-container" id="chatContainer">
-        <div class="chat-width-limiter" id="chatLimiter">
-            <div style="text-align: center; color: var(--text-muted); margin-top: 12vh; padding: 0 16px;">
-                <p style="font-size: 14px; font-weight: 500; color: var(--text-main);">Enter your Disease and food
-                    item below to know should you eat or avoid.</p>
-            </div>
-        </div>
-    </div>
+        <!-- =========================================================
+         SIDEBAR
+    ========================================================= -->
 
-    <!-- Bottom Unified Input Panel -->
-    <div class="input-area-wrapper">
-        <div class="input-inner-container">
-            <!-- Preview Badge -->
-            <div class="preview-badge" id="previewBadge">
-                <img id="thumbPreview" alt="Preview">
-                <span id="fileNameDisplay">Image attached</span>
-                <i class="fa-solid fa-xmark" onclick="clearImage()" style="cursor:pointer; margin-left: 4px;"></i>
+        <aside class="sidebar">
+
+            <div class="brand">
+                <div class="brand-icon">
+                    <i class="fa-solid fa-leaf"></i>
+                </div>
+
+                <div class="brand-name">
+                    Health<span>Bite</span>
+                </div>
             </div>
 
-            <!-- Unified Bar -->
-            <div class="chat-input-bar">
-                <label class="upload-pin" title="Attach product label image">
-                    <input type="file" id="imageInput" accept="image/*" style="display: none;"
-                        onchange="handleFileSelect(event)">
-                    <i class="fa-solid fa-paperclip"></i>
-                </label>
+            <button class="new-chat-btn" onclick="startNewChat()">
+                <i class="fa-solid fa-plus"></i>
+                New analysis
+            </button>
 
-                <input type="text" id="diseaseInput" class="inline-field" placeholder="Disease"
-                    onkeydown="handleKey(event)">
+            <div class="nav-title">
+                Workspace
+            </div>
 
-                <div class="field-divider"></div>
+            <nav class="nav">
 
-                <input type="text" id="foodInput" class="inline-field" placeholder="Food" onkeydown="handleKey(event)">
-
-                <button class="send-arrow-btn" id="sendBtn" onclick="submitAnalysis()">
-                    <i class="fa-solid fa-arrow-up"></i>
+                <button class="nav-item active" data-page="home" onclick="showPage('home')">
+                    <i class="fa-solid fa-message"></i>
+                    New analysis
                 </button>
+
+                <button class="nav-item" data-page="history" onclick="showPage('history')">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    History
+                </button>
+
+                <button class="nav-item" data-page="saved" onclick="showPage('saved')">
+                    <i class="fa-regular fa-bookmark"></i>
+                    Saved foods
+                </button>
+
+                <button class="nav-item" data-page="settings" onclick="showPage('settings')">
+                    <i class="fa-solid fa-gear"></i>
+                    Settings
+                </button>
+
+            </nav>
+
+            <div class="sidebar-bottom">
+
+                <div class="profile-mini">
+
+                    <div class="avatar">
+                        H
+                    </div>
+
+                    <div class="profile-text">
+                        <strong>HealthBite</strong>
+                        <small>Food guidance assistant</small>
+                    </div>
+
+                </div>
+
             </div>
 
-            <div class="footer-note">
-                HealthBite can make mistakes. Check important health information. </div>
-        </div>
+        </aside>
+
+
+        <!-- =========================================================
+         MAIN
+    ========================================================= -->
+
+        <main class="main">
+
+            <header class="topbar">
+
+                <div class="page-title" id="pageTitle">
+                    New analysis
+                </div>
+
+                <div class="status">
+
+                    <span class="status-dot"></span>
+
+                    <span id="statusText">
+                        Food guidance assistant
+                    </span>
+
+                </div>
+
+            </header>
+
+
+            <!-- =====================================================
+             HOME
+        ====================================================== -->
+
+            <section id="homePage" class="chat-page">
+
+                <div class="chat-container">
+
+                    <div id="messages" class="messages"></div>
+
+
+                    <div id="welcome" class="welcome">
+
+                        <div class="welcome-icon">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+
+                        <h1>
+                            Can I eat this?
+                        </h1>
+
+                        <p>
+                            Tell HealthBite what food you want to eat
+                            and the health condition you're managing.
+                            We'll explain whether it may be suitable,
+                            how much may be reasonable, and what to consider.
+                        </p>
+
+                    </div>
+
+
+                    <div id="quickSection">
+
+                        <div class="quick-title">
+                            Try a condition
+                        </div>
+
+                        <div class="quick-chips">
+
+                            <button class="chip" onclick="setCondition('Diabetes')">
+                                Diabetes
+                            </button>
+
+                            <button class="chip" onclick="setCondition('High blood pressure')">
+                                High blood pressure
+                            </button>
+
+                            <button class="chip" onclick="setCondition('High cholesterol')">
+                                High cholesterol
+                            </button>
+
+                            <button class="chip" onclick="setCondition('Fatty liver')">
+                                Fatty liver
+                            </button>
+
+                            <button class="chip" onclick="setCondition('Weight management')">
+                                Weight management
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- INPUT -->
+
+                    <div class="input-section">
+
+                        <div class="input-grid">
+
+                            <div class="field">
+
+                                <div class="field-label">
+                                    <i class="fa-solid fa-utensils"></i>
+                                    Food
+                                </div>
+
+                                <input id="foodInput" type="text" autocomplete="off"
+                                    placeholder="e.g. Apple, biryani, eggs..." onkeydown="handleInputKey(event)">
+
+                            </div>
+
+
+                            <div class="field">
+
+                                <div class="field-label">
+                                    <i class="fa-solid fa-heart-pulse"></i>
+                                    Condition
+                                </div>
+
+                                <input id="conditionInput" type="text" autocomplete="off" placeholder="e.g. Diabetes"
+                                    onkeydown="handleInputKey(event)">
+
+                            </div>
+
+                        </div>
+
+
+                        <div id="imagePreview" class="image-preview">
+
+                            <img id="previewImage" alt="Food preview">
+
+                            <button class="remove-image" onclick="removeImage()" aria-label="Remove image">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+
+                        </div>
+
+
+                        <div class="input-footer">
+
+                            <div class="image-tools">
+
+                                <input type="file" id="imageInput" accept="image/*" hidden
+                                    onchange="handleImage(event)">
+
+                                <button class="icon-btn" onclick="document.getElementById('imageInput').click()"
+                                    title="Add food image">
+                                    <i class="fa-regular fa-image"></i>
+                                </button>
+
+                            </div>
+
+
+                            <button id="sendBtn" class="send-btn" onclick="analyzeFood()" title="Analyze">
+                                <i class="fa-solid fa-arrow-up"></i>
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="disclaimer">
+                        HealthBite provides general informational guidance and is not a substitute for professional
+                        medical advice.
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =====================================================
+             HISTORY
+        ====================================================== -->
+
+            <section id="historyPage" class="content-page" style="display:none;">
+
+                <h1>
+                    History
+                </h1>
+
+                <p>
+                    Your previous food analyses are stored on this device.
+                </p>
+
+                <div id="historyList" class="history-list"></div>
+
+            </section>
+
+
+            <!-- =====================================================
+             SAVED
+        ====================================================== -->
+
+            <section id="savedPage" class="content-page" style="display:none;">
+
+                <h1>
+                    Saved foods
+                </h1>
+
+                <p>
+                    Foods you saved for quick reference.
+                </p>
+
+                <div id="savedList" class="saved-list"></div>
+
+            </section>
+
+
+            <!-- =====================================================
+             SETTINGS
+        ====================================================== -->
+
+            <section id="settingsPage" class="content-page" style="display:none;">
+
+                <h1>
+                    Settings
+                </h1>
+
+                <p>
+                    Manage your local HealthBite data.
+                </p>
+
+                <div class="settings-card">
+
+                    <div class="settings-row">
+
+                        <div>
+                            <strong>
+                                Saved analyses
+                            </strong>
+
+                            <span>
+                                Stored locally in your browser.
+                            </span>
+                        </div>
+
+                        <button class="danger-btn" onclick="clearHistory()">
+                            Clear
+                        </button>
+
+                    </div>
+
+
+                    <div class="settings-row">
+
+                        <div>
+                            <strong>
+                                Saved foods
+                            </strong>
+
+                            <span>
+                                Remove your locally saved foods.
+                            </span>
+                        </div>
+
+                        <button class="danger-btn" onclick="clearSaved()">
+                            Clear
+                        </button>
+
+                    </div>
+
+
+                    <div class="settings-row">
+
+                        <div>
+                            <strong>
+                                Current chat
+                            </strong>
+
+                            <span>
+                                Remove the conversation shown on this device.
+                            </span>
+                        </div>
+
+                        <button class="danger-btn" onclick="clearCurrentChat()">
+                            Clear
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
     </div>
+
+
+    <!-- =============================================================
+     MOBILE NAV
+============================================================= -->
+
+    <nav class="mobile-nav">
+
+        <button class="active" data-mobile-page="home" onclick="showPage('home')">
+            <i class="fa-solid fa-message"></i>
+            Chat
+        </button>
+
+        <button data-mobile-page="history" onclick="showPage('history')">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            History
+        </button>
+
+        <button data-mobile-page="saved" onclick="showPage('saved')">
+            <i class="fa-regular fa-bookmark"></i>
+            Saved
+        </button>
+
+        <button data-mobile-page="settings" onclick="showPage('settings')">
+            <i class="fa-solid fa-gear"></i>
+            Settings
+        </button>
+
+    </nav>
+
 
     <script>
-        // --- CONFIGURATION ---
-        const API_KEY = "AQ.Ab8RN6Io6z2IO4hyVz5vs3MZhUvEv3_i9UHpk7c9y1GGmPk-Xw";
-        const MODEL_NAME = "gemini-3.6-flash";
-        // ---------------------
+        /* =============================================================
+           HEALTHBITE — CONFIGURATION
+        ============================================================= */
 
-        let base64ImageString = null;
-        let isFirstMessage = true;
+        /*
+         * IMPORTANT:
+         *
+         * Never commit a real production API key to GitHub.
+         *
+         * For your GitHub Pages demo you can use a temporary
+         * AnyRouter inference key here.
+         */
 
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    base64ImageString = e.target.result.split(',')[1];
-                    document.getElementById('thumbPreview').src = e.target.result;
-                    document.getElementById('fileNameDisplay').innerText = file.name;
-                    document.getElementById('previewBadge').style.display = 'flex';
-                };
-                reader.readAsDataURL(file);
-            }
+        const API_KEY = "sk-ar-v1-6jhpsrtmcqyd4pvffsner7gibgplrmxzqxqhgumm5hfazqce";
+
+        const MODEL_NAME = "anyrouter/free";
+
+        const API_ENDPOINT =
+            "https://anyrouter.dev/api/v1/chat/completions";
+
+
+        /*
+         * GOOGLE IMAGE SEARCH
+         *
+         * Create a Google Programmable Search Engine and enable
+         * Image Search.
+         *
+         * Then put:
+         *
+         * GOOGLE_IMAGE_API_KEY = your Google API key
+         * GOOGLE_IMAGE_CX = your search engine ID
+         *
+         * If these are empty, HealthBite automatically falls back
+         * to Wikimedia Commons.
+         */
+
+        const GOOGLE_IMAGE_API_KEY = "";
+
+        const GOOGLE_IMAGE_CX = "";
+
+
+        const WIKIMEDIA_API =
+            "https://commons.wikimedia.org/w/api.php";
+
+
+        /* =============================================================
+           STATE
+        ============================================================= */
+
+        let currentImageBase64 = null;
+
+        let currentImageMimeType = null;
+
+
+        let historyData = loadJSON(
+            "healthbite_history",
+            []
+        );
+
+
+        let savedFoods = loadJSON(
+            "healthbite_saved",
+            []
+        );
+
+
+        let chatMessages = loadJSON(
+            "healthbite_chat",
+            []
+        );
+
+
+        /* =============================================================
+           HELPERS
+        ============================================================= */
+
+        function $(id) {
+            return document.getElementById(id);
         }
 
-        function clearImage() {
-            base64ImageString = null;
-            document.getElementById('imageInput').value = '';
-            document.getElementById('previewBadge').style.display = 'none';
-        }
 
-        function handleKey(event) {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                submitAnalysis();
-            }
-        }
-
-        async function submitAnalysis() {
-            const disease = document.getElementById('diseaseInput').value.trim();
-            const food = document.getElementById('foodInput').value.trim();
-            const sendBtn = document.getElementById('sendBtn');
-
-            if (!disease) {
-                alert("Please enter a disease or condition.");
-                document.getElementById('diseaseInput').focus();
-                return;
-            }
-
-            if (!food && !base64ImageString) {
-                alert("Please enter a food item or attach an image.");
-                document.getElementById('foodInput').focus();
-                return;
-            }
-
-            if (isFirstMessage) {
-                document.getElementById('chatLimiter').innerHTML = '';
-                isFirstMessage = false;
-            }
-
-            const chatLimiter = document.getElementById('chatLimiter');
-            const currentImage = base64ImageString;
-
-            let userHtml = `
-                <div class="message-row user">
-                    <div class="message-bubble">
-                        <div>${escapeHtml(disease)} + ${food ? escapeHtml(food) : 'Product Label'}</div>`;
-            if (currentImage) {
-                userHtml += `<img src="data:image/jpeg;base64,${currentImage}" alt="Uploaded Label">`;
-            }
-            userHtml += `</div></div>`;
-            chatLimiter.insertAdjacentHTML('beforeend', userHtml);
-
-            document.getElementById('foodInput').value = '';
-            clearImage();
-            scrollToBottom();
-
-            const aiMsgId = 'ai-msg-' + Date.now();
-            let loadingHtml = `
-                <div class="message-row ai" id="${aiMsgId}">
-                    <div class="message-bubble" style="color: var(--text-muted);">
-                        <i class="fa-solid fa-spinner fa-spin"></i> Checking ...
-                    </div>
-                </div>`;
-            chatLimiter.insertAdjacentHTML('beforeend', loadingHtml);
-            scrollToBottom();
-            sendBtn.disabled = true;
+        function loadJSON(key, fallback) {
 
             try {
-                let promptText = `Analyze safety for:
-Condition: ${disease}
-Item: ${food ? food : 'Provided image'}
 
-Provide a short, direct, point-to-point response using exact headings with bold formatting:
-**Verdict:** [Eat / Do Not Eat / Caution]
-**Portion:** [Safe quantity limit]
-**Reason:** [One brief sentence]
-**Pros:** [Short bullet point benefits]
-**Cons & Risks:** [Short bullet point risks]
-**Suggestion:** [One brief recommendation]`;
+                const value =
+                    localStorage.getItem(key);
 
-                let partsArray = [{ text: promptText }];
-                if (currentImage) {
-                    partsArray.push({
-                        inline_data: { mime_type: "image/jpeg", data: currentImage }
-                    });
-                }
+                return value
+                    ? JSON.parse(value)
+                    : fallback;
 
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${API_KEY}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: partsArray }] })
-                });
+            } catch {
 
-                const data = await response.json();
-                if (data.error) throw new Error(data.error.message);
-
-                const replyText = data.candidates[0].content.parts[0].text;
-                document.getElementById(aiMsgId).querySelector('.message-bubble').innerHTML = formatOutput(replyText);
-
-            } catch (error) {
-                console.error("API Error caught:", error);
-                document.getElementById(aiMsgId).querySelector('.message-bubble').innerHTML =
-                    "<strong>Notice:</strong> The service is temporarily busy with high traffic. Please wait a moment and click send again.";
-            } finally {
-                sendBtn.disabled = false;
-                scrollToBottom();
+                return fallback;
             }
         }
 
+
+        /* =============================================================
+           PAGE NAVIGATION
+        ============================================================= */
+
+        function showPage(page) {
+
+            const pages = {
+                home: $("homePage"),
+                history: $("historyPage"),
+                saved: $("savedPage"),
+                settings: $("settingsPage")
+            };
+
+
+            Object.values(pages).forEach(
+                element => {
+                    element.style.display = "none";
+                }
+            );
+
+
+            if (page === "home") {
+
+                pages.home.style.display = "flex";
+
+            } else {
+
+                pages[page].style.display = "block";
+            }
+
+
+            const titles = {
+
+                home: "New analysis",
+
+                history: "History",
+
+                saved: "Saved foods",
+
+                settings: "Settings"
+
+            };
+
+
+            $("pageTitle").textContent =
+                titles[page];
+
+
+            document.querySelectorAll(".nav-item")
+                .forEach(item => {
+
+                    item.classList.toggle(
+                        "active",
+                        item.dataset.page === page
+                    );
+
+                });
+
+
+            document.querySelectorAll(".mobile-nav button")
+                .forEach(item => {
+
+                    item.classList.toggle(
+                        "active",
+                        item.dataset.mobilePage === page
+                    );
+
+                });
+
+
+            if (page === "history") {
+                renderHistory();
+            }
+
+
+            if (page === "saved") {
+                renderSaved();
+            }
+
+
+            if (page === "home") {
+                restoreChat();
+            }
+        }
+
+
+        /* =============================================================
+           NEW CHAT
+        ============================================================= */
+
+        function startNewChat() {
+
+            $("messages").innerHTML = "";
+
+            $("foodInput").value = "";
+
+            $("conditionInput").value = "";
+
+            removeImage();
+
+
+            $("welcome").style.display =
+                "block";
+
+            $("quickSection").style.display =
+                "block";
+
+
+            $("statusText").textContent =
+                "Food guidance assistant";
+
+
+            showPage("home");
+
+
+            $("foodInput").focus();
+        }
+
+
+        /* =============================================================
+           QUICK CONDITIONS
+        ============================================================= */
+
+        function setCondition(condition) {
+
+            $("conditionInput").value =
+                condition;
+
+            $("foodInput").focus();
+        }
+
+
+        /* =============================================================
+           KEYBOARD
+        ============================================================= */
+
+        function handleInputKey(event) {
+
+            if (event.key === "Enter") {
+
+                event.preventDefault();
+
+                analyzeFood();
+            }
+        }
+
+
+        /* =============================================================
+           IMAGE UPLOAD
+        ============================================================= */
+
+        function handleImage(event) {
+
+            const file =
+                event.target.files?.[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            if (!file.type.startsWith("image/")) {
+
+                alert(
+                    "Please select an image file."
+                );
+
+                return;
+            }
+
+
+            currentImageMimeType =
+                file.type;
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (e) {
+
+                    const result =
+                        e.target.result;
+
+
+                    currentImageBase64 =
+                        result.split(",")[1];
+
+
+                    $("previewImage").src =
+                        result;
+
+
+                    $("imagePreview").style.display =
+                        "block";
+                };
+
+
+            reader.onerror =
+                function () {
+
+                    alert(
+                        "Could not read the image."
+                    );
+                };
+
+
+            reader.readAsDataURL(file);
+        }
+
+
+        function removeImage() {
+
+            currentImageBase64 = null;
+
+            currentImageMimeType = null;
+
+
+            $("imageInput").value = "";
+
+            $("previewImage").src = "";
+
+
+            $("imagePreview").style.display =
+                "none";
+        }
+
+
+        /* =============================================================
+           MAIN ANALYSIS
+        ============================================================= */
+
+        async function analyzeFood() {
+
+            const food =
+                $("foodInput").value.trim();
+
+
+            const condition =
+                $("conditionInput").value.trim();
+
+
+            if (!food) {
+
+                $("foodInput").focus();
+
+                return;
+            }
+
+
+            if (!condition) {
+
+                $("conditionInput").focus();
+
+                return;
+            }
+
+
+            if (
+                !API_KEY ||
+                API_KEY ===
+                "PASTE_YOUR_NEW_ANYROUTER_KEY_HERE"
+            ) {
+
+                showConfigurationError();
+
+                return;
+            }
+
+
+            const sendButton =
+                $("sendBtn");
+
+
+            sendButton.disabled = true;
+
+
+            $("statusText").textContent =
+                "Analyzing...";
+
+
+            $("welcome").style.display =
+                "none";
+
+
+            $("quickSection").style.display =
+                "none";
+
+
+            const imageSrc =
+                $("previewImage").src || "";
+
+
+            addUserMessage(
+                food,
+                condition,
+                imageSrc
+            );
+
+
+            const aiMsgId =
+                addAIThinking();
+
+
+            /* =========================================================
+               SYSTEM PROMPT
+            ========================================================= */
+
+            const systemPrompt = `
+You are HealthBite, a simple food and health guidance assistant.
+
+Return ONLY valid JSON.
+
+Do not use Markdown.
+Do not use code fences.
+Do not add any text before or after JSON.
+
+Use EXACTLY this structure:
+
+{
+  "food": "food name",
+  "verdict": "Theek hai",
+  "verdict_level": "moderate",
+  "portion": "practical portion",
+  "why": [
+    "short simple point",
+    "short simple point"
+  ],
+  "watch": [
+    "important thing to watch"
+  ],
+  "better_option": "one practical alternative or suggestion",
+  "disclaimer": "General maloomat hai, doctor ka mashwara nahi."
+}
+
+RULES:
+
+- All user-facing text must be simple Roman Urdu.
+- Keep sentences short.
+- Maximum 3 points in why.
+- Maximum 3 points in watch.
+- Do not write long paragraphs.
+- Do not use complicated medical terminology.
+- Be practical.
+- Give an approximate realistic portion.
+- Mention preparation if it changes the answer.
+- Only mention health factors relevant to the condition.
+- Do not give unnecessary calorie or macro numbers.
+- Do not diagnose.
+- Do not prescribe medicine.
+- Do not recommend stopping or changing medicine.
+- Do not claim certainty.
+- If information is unclear, say so briefly.
+- Individual medical advice should come from a qualified healthcare professional.
+
+verdict MUST be exactly one of:
+
+"Behtar choice"
+"Theek hai"
+"Kam karein"
+"Avoid karein"
+
+verdict_level MUST be exactly one of:
+
+"good"
+"moderate"
+"limit"
+"avoid"
+`;
+
+
+            const userPrompt = `
+Food:
+${food}
+
+Health condition:
+${condition}
+
+Give a concise HealthBite analysis.
+Return only the required JSON.
+`;
+
+
+            try {
+
+                /* =====================================================
+                   API REQUEST
+                ===================================================== */
+
+                const response =
+                    await fetch(
+                        API_ENDPOINT,
+                        {
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json",
+
+                                "Authorization":
+                                    `Bearer ${API_KEY}`
+
+                            },
+
+                            body: JSON.stringify({
+
+                                model:
+                                    MODEL_NAME,
+
+                                messages: [
+
+                                    {
+                                        role: "system",
+
+                                        content:
+                                            systemPrompt
+                                    },
+
+                                    {
+                                        role: "user",
+
+                                        content:
+                                            userPrompt
+                                    }
+
+                                ],
+
+                                temperature: 0.2,
+
+                                max_tokens: 700
+
+                            })
+                        }
+                    );
+
+
+                const rawResponse =
+                    await response.text();
+
+
+                console.log(
+                    "HealthBite AnyRouter HTTP Status:",
+                    response.status
+                );
+
+
+                console.log(
+                    "HealthBite AnyRouter Response:",
+                    rawResponse
+                );
+
+
+                let data;
+
+
+                try {
+
+                    data =
+                        JSON.parse(rawResponse);
+
+                } catch {
+
+                    throw new Error(
+                        `AnyRouter returned invalid JSON. HTTP ${response.status}.`
+                    );
+                }
+
+
+                if (!response.ok) {
+
+                    const apiMessage =
+                        data?.error?.message ||
+                        data?.message ||
+                        `AnyRouter request failed with HTTP ${response.status}.`;
+
+
+                    throw new Error(
+                        `HTTP ${response.status}: ${apiMessage}`
+                    );
+                }
+
+
+                if (data?.error) {
+
+                    throw new Error(
+                        data.error.message ||
+                        "AnyRouter API returned an error."
+                    );
+                }
+
+
+                const replyText =
+                    data?.choices?.[0]?.message?.content?.trim();
+
+
+                if (!replyText) {
+
+                    throw new Error(
+                        "AnyRouter returned no text response."
+                    );
+                }
+
+
+                /* =====================================================
+                   PARSE
+                ===================================================== */
+
+                const result =
+                    parseHealthBiteJSON(
+                        replyText
+                    );
+
+
+                /* =====================================================
+                   SEARCH IMAGE
+                ===================================================== */
+
+                const foodImage =
+                    await searchFoodImage(
+                        result.food || food
+                    );
+
+
+                /* =====================================================
+                   RENDER
+                ===================================================== */
+
+                replaceThinkingMessage(
+                    aiMsgId,
+                    result,
+                    food,
+                    condition,
+                    foodImage
+                );
+
+
+                /* =====================================================
+                   HISTORY
+                ===================================================== */
+
+                saveHistory(
+                    food,
+                    condition,
+                    result
+                );
+
+
+                $("statusText").textContent =
+                    "Food guidance assistant";
+
+
+                removeImage();
+
+
+            } catch (error) {
+
+                console.error(
+                    "HealthBite AnyRouter API Error:",
+                    error
+                );
+
+
+                replaceThinkingWithError(
+                    aiMsgId,
+                    error
+                );
+
+
+                $("statusText").textContent =
+                    "API request failed";
+
+
+            } finally {
+
+                sendButton.disabled = false;
+            }
+        }
+
+
+        /* =============================================================
+           PARSE HEALTHBITE JSON
+        ============================================================= */
+
+        function parseHealthBiteJSON(text) {
+
+            let cleaned =
+                String(text || "").trim();
+
+
+            cleaned =
+                cleaned
+                    .replace(
+                        /^```json\s*/i,
+                        ""
+                    )
+                    .replace(
+                        /^```\s*/i,
+                        ""
+                    )
+                    .replace(
+                        /\s*```$/i,
+                        ""
+                    )
+                    .trim();
+
+
+            const start =
+                cleaned.indexOf("{");
+
+
+            const end =
+                cleaned.lastIndexOf("}");
+
+
+            if (
+                start !== -1 &&
+                end !== -1 &&
+                end > start
+            ) {
+
+                cleaned =
+                    cleaned.substring(
+                        start,
+                        end + 1
+                    );
+            }
+
+
+            try {
+
+                return normalizeResult(
+                    JSON.parse(cleaned)
+                );
+
+            } catch {
+
+                console.error(
+                    "HealthBite JSON parse failed:",
+                    text
+                );
+
+
+                return {
+
+                    food: "Food analysis",
+
+                    verdict: "Theek hai",
+
+                    verdict_level: "moderate",
+
+                    portion:
+                        "Portion ko moderate rakhein.",
+
+                    why: [
+                        "Food ko moderate quantity mein lena behtar hai."
+                    ],
+
+                    watch: [
+                        "Portion aur preparation ka khayal rakhein."
+                    ],
+
+                    better_option:
+                        "Simple aur kam processed option choose karein.",
+
+                    disclaimer:
+                        "General maloomat hai, doctor ka mashwara nahi."
+
+                };
+            }
+        }
+
+
+        /* =============================================================
+           NORMALIZE RESULT
+        ============================================================= */
+
+        function normalizeResult(result) {
+
+            const allowedLevels = [
+                "good",
+                "moderate",
+                "limit",
+                "avoid"
+            ];
+
+
+            const allowedVerdicts = [
+                "Behtar choice",
+                "Theek hai",
+                "Kam karein",
+                "Avoid karein"
+            ];
+
+
+            const level =
+                allowedLevels.includes(
+                    result?.verdict_level
+                )
+                    ? result.verdict_level
+                    : "moderate";
+
+
+            let verdict =
+                allowedVerdicts.includes(
+                    result?.verdict
+                )
+                    ? result.verdict
+                    : "";
+
+
+            if (!verdict) {
+
+                verdict =
+                    level === "good"
+                        ? "Behtar choice"
+                        : level === "limit"
+                            ? "Kam karein"
+                            : level === "avoid"
+                                ? "Avoid karein"
+                                : "Theek hai";
+            }
+
+
+            let why =
+                Array.isArray(result?.why)
+                    ? result.why
+                    : [String(result?.why || "")];
+
+
+            let watch =
+                Array.isArray(result?.watch)
+                    ? result.watch
+                    : [String(result?.watch || "")];
+
+
+            why =
+                why
+                    .map(item => String(item).trim())
+                    .filter(Boolean)
+                    .slice(0, 3);
+
+
+            watch =
+                watch
+                    .map(item => String(item).trim())
+                    .filter(Boolean)
+                    .slice(0, 3);
+
+
+            return {
+
+                food:
+                    String(
+                        result?.food ||
+                        "Food"
+                    ),
+
+                verdict,
+
+                verdict_level:
+                    level,
+
+                portion:
+                    String(
+                        result?.portion ||
+                        "Moderate portion rakhein."
+                    ),
+
+                why:
+                    why.length
+                        ? why
+                        : [
+                            "Portion aur preparation important hain."
+                        ],
+
+                watch:
+                    watch.length
+                        ? watch
+                        : [
+                            "Portion ka khayal rakhein."
+                        ],
+
+                better_option:
+                    String(
+                        result?.better_option ||
+                        "Simple aur less processed option choose karein."
+                    ),
+
+                disclaimer:
+                    String(
+                        result?.disclaimer ||
+                        "General maloomat hai, doctor ka mashwara nahi."
+                    )
+            };
+        }
+
+
+        /* =============================================================
+           CONFIGURATION ERROR
+        ============================================================= */
+
+        function showConfigurationError() {
+
+            $("welcome").style.display =
+                "none";
+
+
+            $("quickSection").style.display =
+                "none";
+
+
+            addAIError(
+                "AnyRouter key missing",
+                "index.html ke API_KEY variable mein apni nayi AnyRouter inference key add karein."
+            );
+        }
+
+
+        /* =============================================================
+           USER MESSAGE
+        ============================================================= */
+
+        function addUserMessage(
+            food,
+            condition,
+            imageSrc
+        ) {
+
+            const messages =
+                $("messages");
+
+
+            const message =
+                document.createElement("div");
+
+
+            message.className =
+                "message user";
+
+
+            const imageHTML =
+                imageSrc
+                    ? `
+                <div style="margin-bottom:8px;">
+                    <img
+                        src="${escapeHtml(imageSrc)}"
+                        style="
+                            width:90px;
+                            height:90px;
+                            object-fit:cover;
+                            border-radius:10px;
+                            display:block;
+                        "
+                        alt="Food"
+                    >
+                </div>
+            `
+                    : "";
+
+
+            message.innerHTML = `
+
+        <div class="message-content">
+
+            <div class="message-name">
+                You
+            </div>
+
+            <div class="message-bubble">
+
+                ${imageHTML}
+
+                <strong>
+                    ${escapeHtml(food)}
+                </strong>
+
+                <div style="
+                    margin-top:4px;
+                    color:#6b7280;
+                    font-size:12px;
+                ">
+                    Condition:
+                    ${escapeHtml(condition)}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="message-avatar">
+            <i class="fa-solid fa-user"></i>
+        </div>
+
+    `;
+
+
+            messages.appendChild(message);
+
+
+            chatMessages.push({
+
+                type: "user",
+
+                food,
+
+                condition,
+
+                image: imageSrc || "",
+
+                date:
+                    new Date().toISOString()
+
+            });
+
+
+            saveChat();
+
+            scrollToBottom();
+        }
+
+
+        /* =============================================================
+           AI THINKING
+        ============================================================= */
+
+        function addAIThinking() {
+
+            const id =
+                "ai-" +
+                Date.now() +
+                "-" +
+                Math.random()
+                    .toString(36)
+                    .substring(2, 8);
+
+
+            const message =
+                document.createElement("div");
+
+
+            message.className =
+                "message";
+
+
+            message.id =
+                id;
+
+
+            message.innerHTML = `
+
+        <div class="message-avatar">
+            <i class="fa-solid fa-leaf"></i>
+        </div>
+
+        <div class="message-content">
+
+            <div class="message-name">
+                HealthBite
+            </div>
+
+            <div class="message-bubble">
+
+                <div class="typing">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+
+            $("messages").appendChild(message);
+
+            scrollToBottom();
+
+
+            return id;
+        }
+
+
+        /* =============================================================
+           BUILD IMAGE HTML
+        ============================================================= */
+
+        function buildFoodImageHTML(
+            foodImage,
+            food,
+            condition
+        ) {
+
+            if (!foodImage) {
+
+                return `
+            <div class="food-hero-placeholder">
+                <i class="fa-solid fa-utensils"></i>
+            </div>
+        `;
+            }
+
+
+            const sourceName =
+                foodImage.source === "google"
+                    ? "Google Images"
+                    : "Wikimedia Commons";
+
+
+            return `
+        <div class="food-hero">
+
+            <img
+                src="${escapeHtml(foodImage.url)}"
+                alt="${escapeHtml(food)}"
+                loading="lazy"
+                onerror="this.style.display='none'; this.parentElement.classList.add('image-failed');"
+            >
+
+            <div class="food-hero-info">
+
+                <div class="food-hero-title">
+                    ${escapeHtml(food)}
+                </div>
+
+                <div class="food-hero-condition">
+                    ${escapeHtml(condition)}
+                </div>
+
+            </div>
+
+            <div class="image-credit">
+
+                <a
+                    href="${escapeHtml(foodImage.pageUrl || '#')}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    ${escapeHtml(sourceName)}
+                </a>
+
+            </div>
+
+        </div>
+    `;
+        }
+
+
+        /* =============================================================
+           RESULT HTML
+        ============================================================= */
+
+        function buildResultHTML(
+            result,
+            food,
+            condition,
+            foodImage
+        ) {
+
+            const imageHTML =
+                buildFoodImageHTML(
+                    foodImage,
+                    result.food || food,
+                    condition
+                );
+
+
+            const verdictIcon =
+                result.verdict_level === "good"
+                    ? "fa-circle-check"
+                    : result.verdict_level === "avoid"
+                        ? "fa-circle-xmark"
+                        : "fa-circle-exclamation";
+
+
+            const whyHTML =
+                result.why
+                    .map(
+                        item =>
+                            `<li>${escapeHtml(item)}</li>`
+                    )
+                    .join("");
+
+
+            const watchHTML =
+                result.watch
+                    .map(
+                        item =>
+                            `<li>${escapeHtml(item)}</li>`
+                    )
+                    .join("");
+
+
+            const copyTextValue =
+                buildCopyText(
+                    result,
+                    food,
+                    condition
+                );
+
+
+            return `
+
+        <div class="ai-result">
+
+            ${imageHTML}
+
+            <div class="result-main">
+
+                <div class="result-verdict ${escapeHtml(result.verdict_level)}">
+
+                    <i class="fa-solid ${verdictIcon}"></i>
+
+                    ${escapeHtml(result.verdict)}
+
+                </div>
+
+
+                <div class="result-grid">
+
+                    <div class="result-card">
+
+                        <div class="result-card-label">
+                            <i class="fa-solid fa-utensils"></i>
+                            Portion
+                        </div>
+
+                        <p>
+                            ${escapeHtml(result.portion)}
+                        </p>
+
+                    </div>
+
+
+                    <div class="result-card">
+
+                        <div class="result-card-label">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            Condition
+                        </div>
+
+                        <p>
+                            ${escapeHtml(condition)}
+                        </p>
+
+                    </div>
+
+
+                    <div class="result-card full">
+
+                        <div class="result-card-label">
+                            <i class="fa-solid fa-circle-info"></i>
+                            Kyun?
+                        </div>
+
+                        <ul class="result-list">
+                            ${whyHTML}
+                        </ul>
+
+                    </div>
+
+
+                    <div class="result-card full">
+
+                        <div class="result-card-label">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            Dhyan
+                        </div>
+
+                        <ul class="result-list">
+                            ${watchHTML}
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+                <div class="better-option">
+
+                    <div class="better-option-label">
+                        Behtar option
+                    </div>
+
+                    <p>
+                        ${escapeHtml(result.better_option)}
+                    </p>
+
+                </div>
+
+
+                <div class="result-disclaimer">
+                    ${escapeHtml(result.disclaimer)}
+                </div>
+
+            </div>
+
+
+            <div class="result-actions">
+
+                <button
+                    class="result-action"
+                    onclick='saveFood(
+                        ${JSON.stringify(food)},
+                        ${JSON.stringify(condition)}
+                    )'
+                >
+                    <i class="fa-regular fa-bookmark"></i>
+                    Save
+                </button>
+
+
+                <button
+                    class="result-action"
+                    onclick='copyText(
+                        ${JSON.stringify(copyTextValue)}
+                    )'
+                >
+                    <i class="fa-regular fa-copy"></i>
+                    Copy
+                </button>
+
+            </div>
+
+        </div>
+    `;
+        }
+
+
+        /* =============================================================
+           REPLACE THINKING WITH RESULT
+        ============================================================= */
+
+        function replaceThinkingMessage(
+            id,
+            result,
+            food,
+            condition,
+            foodImage
+        ) {
+
+            const message =
+                $(id);
+
+
+            if (!message) {
+                return;
+            }
+
+
+            const bubble =
+                message.querySelector(
+                    ".message-bubble"
+                );
+
+
+            if (!bubble) {
+                return;
+            }
+
+
+            bubble.innerHTML =
+                buildResultHTML(
+                    result,
+                    food,
+                    condition,
+                    foodImage
+                );
+
+
+            chatMessages.push({
+
+                type: "assistant",
+
+                food,
+
+                condition,
+
+                result,
+
+                image:
+                    foodImage?.url || "",
+
+                imagePage:
+                    foodImage?.pageUrl || "",
+
+                imageSource:
+                    foodImage?.source || "",
+
+                date:
+                    new Date().toISOString()
+
+            });
+
+
+            saveChat();
+
+            scrollToBottom();
+        }
+
+
+        /* =============================================================
+           COPY FORMAT
+        ============================================================= */
+
+        function buildCopyText(
+            result,
+            food,
+            condition
+        ) {
+
+            return `
+${result.food || food}
+
+Condition: ${condition}
+
+Faisla: ${result.verdict}
+
+Portion:
+${result.portion}
+
+Kyun:
+${result.why.join("\n")}
+
+Dhyan:
+${result.watch.join("\n")}
+
+Behtar option:
+${result.better_option}
+
+${result.disclaimer}
+`.trim();
+        }
+
+
+        /* =============================================================
+           ERROR
+        ============================================================= */
+
+        function replaceThinkingWithError(
+            id,
+            error
+        ) {
+
+            const message =
+                $(id);
+
+
+            if (!message) {
+                return;
+            }
+
+
+            const safeMessage =
+                escapeHtml(
+                    error?.message ||
+                    "Unknown API error."
+                );
+
+
+            const bubble =
+                message.querySelector(
+                    ".message-bubble"
+                );
+
+
+            if (!bubble) {
+                return;
+            }
+
+
+            bubble.innerHTML = `
+
+        <div class="api-error">
+
+            <strong>
+                AnyRouter API Error
+            </strong>
+
+            <div style="margin-top:5px;">
+                ${safeMessage}
+            </div>
+
+            <code>
+                Browser Console mein complete response check karein.
+            </code>
+
+        </div>
+    `;
+
+
+            scrollToBottom();
+        }
+
+
+        function addAIError(
+            title,
+            messageText
+        ) {
+
+            const message =
+                document.createElement("div");
+
+
+            message.className =
+                "message";
+
+
+            message.innerHTML = `
+
+        <div class="message-avatar">
+            <i class="fa-solid fa-leaf"></i>
+        </div>
+
+        <div class="message-content">
+
+            <div class="message-name">
+                HealthBite
+            </div>
+
+            <div class="api-error">
+
+                <strong>
+                    ${escapeHtml(title)}
+                </strong>
+
+                <div style="margin-top:5px;">
+                    ${escapeHtml(messageText)}
+                </div>
+
+            </div>
+
+        </div>
+    `;
+
+
+            $("messages").appendChild(message);
+
+            scrollToBottom();
+        }
+
+
+        /* =============================================================
+           GOOGLE IMAGE SEARCH
+        ============================================================= */
+
+        async function searchGoogleFoodImage(food) {
+
+            if (
+                !GOOGLE_IMAGE_API_KEY ||
+                !GOOGLE_IMAGE_CX
+            ) {
+                return null;
+            }
+
+
+            try {
+
+                const query =
+                    encodeURIComponent(
+                        `${food} food`
+                    );
+
+
+                const url =
+                    `https://www.googleapis.com/customsearch/v1` +
+                    `?key=${encodeURIComponent(GOOGLE_IMAGE_API_KEY)}` +
+                    `&cx=${encodeURIComponent(GOOGLE_IMAGE_CX)}` +
+                    `&q=${query}` +
+                    `&searchType=image` +
+                    `&num=1` +
+                    `&safe=active`;
+
+
+                const response =
+                    await fetch(url);
+
+
+                if (!response.ok) {
+
+                    console.warn(
+                        "Google image search HTTP error:",
+                        response.status
+                    );
+
+                    return null;
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                const item =
+                    data?.items?.[0];
+
+
+                if (!item) {
+                    return null;
+                }
+
+
+                const imageURL =
+                    item?.link;
+
+
+                if (!imageURL) {
+                    return null;
+                }
+
+
+                return {
+
+                    url:
+                        imageURL,
+
+                    pageUrl:
+                        item?.image?.contextLink ||
+                        item?.image?.thumbnailLink ||
+                        "#",
+
+                    source:
+                        "google"
+
+                };
+
+
+            } catch (error) {
+
+                console.warn(
+                    "Google image search failed:",
+                    error
+                );
+
+                return null;
+            }
+        }
+
+
+        /* =============================================================
+           WIKIMEDIA FALLBACK
+        ============================================================= */
+
+        async function searchWikimediaFoodImage(food) {
+
+            try {
+
+                const params =
+                    new URLSearchParams({
+
+                        action: "query",
+
+                        generator: "search",
+
+                        gsrsearch:
+                            `${food} food`,
+
+                        gsrnamespace: "6",
+
+                        gsrlimit: "1",
+
+                        prop: "imageinfo",
+
+                        iiprop:
+                            "url|mime",
+
+                        iiurlwidth:
+                            "1000",
+
+                        format:
+                            "json",
+
+                        origin:
+                            "*"
+
+                    });
+
+
+                const response =
+                    await fetch(
+                        `${WIKIMEDIA_API}?${params.toString()}`
+                    );
+
+
+                if (!response.ok) {
+                    return null;
+                }
+
+
+                const data =
+                    await response.json();
+
+
+                const pages =
+                    data?.query?.pages;
+
+
+                if (!pages) {
+                    return null;
+                }
+
+
+                const page =
+                    Object.values(pages)[0];
+
+
+                const image =
+                    page?.imageinfo?.[0];
+
+
+                if (
+                    !image?.thumburl &&
+                    !image?.url
+                ) {
+                    return null;
+                }
+
+
+                return {
+
+                    url:
+                        image.thumburl ||
+                        image.url,
+
+                    pageUrl:
+                        `https://commons.wikimedia.org/wiki/${encodeURIComponent(
+                            page.title.replace(/ /g, "_")
+                        )}`,
+
+                    source:
+                        "wikimedia"
+
+                };
+
+
+            } catch (error) {
+
+                console.warn(
+                    "Wikimedia image search failed:",
+                    error
+                );
+
+                return null;
+            }
+        }
+
+
+        /* =============================================================
+           IMAGE SEARCH CONTROLLER
+        ============================================================= */
+
+        async function searchFoodImage(food) {
+
+            /*
+             * First try Google.
+             * This gives the closest experience to a ChatGPT-style
+             * relevant web image.
+             */
+
+            const googleImage =
+                await searchGoogleFoodImage(food);
+
+
+            if (googleImage) {
+                return googleImage;
+            }
+
+
+            /*
+             * Fallback if Google search is not configured or
+             * doesn't return a result.
+             */
+
+            return await searchWikimediaFoodImage(food);
+        }
+
+
+        /* =============================================================
+           CHAT STORAGE
+        ============================================================= */
+
+        function saveChat() {
+
+            chatMessages =
+                chatMessages.slice(-100);
+
+
+            try {
+
+                localStorage.setItem(
+                    "healthbite_chat",
+                    JSON.stringify(chatMessages)
+                );
+
+            } catch (error) {
+
+                console.warn(
+                    "Could not save chat:",
+                    error
+                );
+            }
+        }
+
+
+        /* =============================================================
+           RESTORE CHAT
+        ============================================================= */
+
+        function restoreChat() {
+
+            const messages =
+                $("messages");
+
+
+            messages.innerHTML = "";
+
+
+            if (!chatMessages.length) {
+
+                $("welcome").style.display =
+                    "block";
+
+                $("quickSection").style.display =
+                    "block";
+
+                return;
+            }
+
+
+            $("welcome").style.display =
+                "none";
+
+
+            $("quickSection").style.display =
+                "none";
+
+
+            chatMessages.forEach(
+                item => {
+
+                    if (
+                        item.type === "user"
+                    ) {
+
+                        renderSavedUserMessage(
+                            item
+                        );
+                    }
+
+
+                    if (
+                        item.type === "assistant"
+                    ) {
+
+                        renderSavedAssistantMessage(
+                            item
+                        );
+                    }
+
+                }
+            );
+
+
+            scrollToBottom();
+        }
+
+
+        /* =============================================================
+           RESTORE USER
+        ============================================================= */
+
+        function renderSavedUserMessage(item) {
+
+            const message =
+                document.createElement("div");
+
+
+            message.className =
+                "message user";
+
+
+            const imageHTML =
+                item.image
+                    ? `
+                <div style="margin-bottom:8px;">
+                    <img
+                        src="${escapeHtml(item.image)}"
+                        style="
+                            width:90px;
+                            height:90px;
+                            object-fit:cover;
+                            border-radius:10px;
+                            display:block;
+                        "
+                        alt="Food"
+                    >
+                </div>
+            `
+                    : "";
+
+
+            message.innerHTML = `
+
+        <div class="message-content">
+
+            <div class="message-name">
+                You
+            </div>
+
+            <div class="message-bubble">
+
+                ${imageHTML}
+
+                <strong>
+                    ${escapeHtml(item.food)}
+                </strong>
+
+                <div style="
+                    margin-top:4px;
+                    color:#6b7280;
+                    font-size:12px;
+                ">
+                    Condition:
+                    ${escapeHtml(item.condition)}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="message-avatar">
+            <i class="fa-solid fa-user"></i>
+        </div>
+
+    `;
+
+
+            $("messages").appendChild(message);
+        }
+
+
+        /* =============================================================
+           RESTORE ASSISTANT
+        ============================================================= */
+
+        function renderSavedAssistantMessage(item) {
+
+            if (!item.result) {
+                return;
+            }
+
+
+            const message =
+                document.createElement("div");
+
+
+            message.className =
+                "message";
+
+
+            const result =
+                normalizeResult(
+                    item.result
+                );
+
+
+            const foodImage =
+                item.image
+                    ? {
+
+                        url:
+                            item.image,
+
+                        pageUrl:
+                            item.imagePage || "#",
+
+                        source:
+                            item.imageSource ||
+                            "wikimedia"
+
+                    }
+                    : null;
+
+
+            message.innerHTML = `
+
+        <div class="message-avatar">
+            <i class="fa-solid fa-leaf"></i>
+        </div>
+
+        <div class="message-content">
+
+            <div class="message-name">
+                HealthBite
+            </div>
+
+            <div class="message-bubble">
+
+                ${buildResultHTML(
+                result,
+                item.food,
+                item.condition,
+                foodImage
+            )}
+
+            </div>
+
+        </div>
+    `;
+
+
+            $("messages").appendChild(message);
+        }
+
+
+        /* =============================================================
+           CLEAR CURRENT CHAT
+        ============================================================= */
+
+        function clearCurrentChat() {
+
+            if (
+                !confirm(
+                    "Clear current chat?"
+                )
+            ) {
+                return;
+            }
+
+
+            chatMessages = [];
+
+
+            localStorage.removeItem(
+                "healthbite_chat"
+            );
+
+
+            $("messages").innerHTML = "";
+
+
+            $("welcome").style.display =
+                "block";
+
+
+            $("quickSection").style.display =
+                "block";
+
+
+            $("statusText").textContent =
+                "Food guidance assistant";
+        }
+
+
+        /* =============================================================
+           HISTORY
+        ============================================================= */
+
+        function saveHistory(
+            food,
+            condition,
+            response
+        ) {
+
+            historyData.unshift({
+
+                id:
+                    Date.now(),
+
+                food,
+
+                condition,
+
+                response,
+
+                date:
+                    new Date().toISOString()
+
+            });
+
+
+            historyData =
+                historyData.slice(0, 100);
+
+
+            localStorage.setItem(
+                "healthbite_history",
+                JSON.stringify(historyData)
+            );
+        }
+
+
+        function renderHistory() {
+
+            const container =
+                $("historyList");
+
+
+            if (!historyData.length) {
+
+                container.innerHTML = `
+
+            <div class="empty-state">
+
+                <i class="fa-regular fa-clock"></i>
+
+                <div>
+                    No analyses yet.
+                </div>
+
+            </div>
+        `;
+
+                return;
+            }
+
+
+            container.innerHTML =
+                historyData
+                    .map(
+                        item => `
+
+            <div class="history-item">
+
+                <div class="history-info">
+
+                    <strong>
+                        ${escapeHtml(item.food)}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(item.condition)}
+                        ·
+                        ${formatDate(item.date)}
+                    </span>
+
+                </div>
+
+                <div class="item-actions">
+
+                    <button
+                        onclick="reuseHistory(${item.id})"
+                        title="Use again"
+                    >
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </button>
+
+                    <button
+                        onclick="deleteHistory(${item.id})"
+                        title="Delete"
+                    >
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+
+                </div>
+
+            </div>
+        `
+                    )
+                    .join("");
+        }
+
+
+        function reuseHistory(id) {
+
+            const item =
+                historyData.find(
+                    entry =>
+                        entry.id === id
+                );
+
+
+            if (!item) {
+                return;
+            }
+
+
+            showPage("home");
+
+
+            $("foodInput").value =
+                item.food;
+
+
+            $("conditionInput").value =
+                item.condition;
+
+
+            $("foodInput").focus();
+        }
+
+
+        function deleteHistory(id) {
+
+            historyData =
+                historyData.filter(
+                    item =>
+                        item.id !== id
+                );
+
+
+            localStorage.setItem(
+                "healthbite_history",
+                JSON.stringify(historyData)
+            );
+
+
+            renderHistory();
+        }
+
+
+        function clearHistory() {
+
+            if (
+                !confirm(
+                    "Clear all HealthBite history?"
+                )
+            ) {
+                return;
+            }
+
+
+            historyData = [];
+
+
+            localStorage.removeItem(
+                "healthbite_history"
+            );
+
+
+            renderHistory();
+        }
+
+
+        /* =============================================================
+           SAVED FOODS
+        ============================================================= */
+
+        function saveFood(
+            food,
+            condition
+        ) {
+
+            const exists =
+                savedFoods.some(
+                    item =>
+                        item.food.toLowerCase() ===
+                        food.toLowerCase() &&
+                        item.condition.toLowerCase() ===
+                        condition.toLowerCase()
+                );
+
+
+            if (exists) {
+
+                alert(
+                    "This food is already saved."
+                );
+
+                return;
+            }
+
+
+            savedFoods.unshift({
+
+                id:
+                    Date.now(),
+
+                food,
+
+                condition,
+
+                date:
+                    new Date().toISOString()
+
+            });
+
+
+            savedFoods =
+                savedFoods.slice(0, 100);
+
+
+            localStorage.setItem(
+                "healthbite_saved",
+                JSON.stringify(savedFoods)
+            );
+
+
+            alert(
+                "Food saved."
+            );
+        }
+
+
+        function renderSaved() {
+
+            const container =
+                $("savedList");
+
+
+            if (!savedFoods.length) {
+
+                container.innerHTML = `
+
+            <div class="empty-state">
+
+                <i class="fa-regular fa-bookmark"></i>
+
+                <div>
+                    No saved foods yet.
+                </div>
+
+            </div>
+        `;
+
+                return;
+            }
+
+
+            container.innerHTML =
+                savedFoods
+                    .map(
+                        item => `
+
+            <div class="saved-item">
+
+                <div class="saved-info">
+
+                    <strong>
+                        ${escapeHtml(item.food)}
+                    </strong>
+
+                    <span>
+                        ${escapeHtml(item.condition)}
+                    </span>
+
+                </div>
+
+                <div class="item-actions">
+
+                    <button
+                        onclick="useSavedFood(${item.id})"
+                        title="Use again"
+                    >
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </button>
+
+                    <button
+                        onclick="deleteSaved(${item.id})"
+                        title="Delete"
+                    >
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+
+                </div>
+
+            </div>
+        `
+                    )
+                    .join("");
+        }
+
+
+        function useSavedFood(id) {
+
+            const item =
+                savedFoods.find(
+                    entry =>
+                        entry.id === id
+                );
+
+
+            if (!item) {
+                return;
+            }
+
+
+            showPage("home");
+
+
+            $("foodInput").value =
+                item.food;
+
+
+            $("conditionInput").value =
+                item.condition;
+
+
+            $("foodInput").focus();
+        }
+
+
+        function deleteSaved(id) {
+
+            savedFoods =
+                savedFoods.filter(
+                    item =>
+                        item.id !== id
+                );
+
+
+            localStorage.setItem(
+                "healthbite_saved",
+                JSON.stringify(savedFoods)
+            );
+
+
+            renderSaved();
+        }
+
+
+        function clearSaved() {
+
+            if (
+                !confirm(
+                    "Clear all saved foods?"
+                )
+            ) {
+                return;
+            }
+
+
+            savedFoods = [];
+
+
+            localStorage.removeItem(
+                "healthbite_saved"
+            );
+
+
+            renderSaved();
+        }
+
+
+        /* =============================================================
+           COPY
+        ============================================================= */
+
+        async function copyText(text) {
+
+            try {
+
+                if (
+                    navigator.clipboard &&
+                    window.isSecureContext
+                ) {
+
+                    await navigator.clipboard.writeText(
+                        text
+                    );
+
+                } else {
+
+                    const textarea =
+                        document.createElement("textarea");
+
+
+                    textarea.value =
+                        text;
+
+
+                    textarea.style.position =
+                        "fixed";
+
+                    textarea.style.opacity =
+                        "0";
+
+
+                    document.body.appendChild(
+                        textarea
+                    );
+
+
+                    textarea.select();
+
+                    document.execCommand(
+                        "copy"
+                    );
+
+
+                    textarea.remove();
+                }
+
+
+                alert("Copied.");
+
+            } catch {
+
+                alert(
+                    "Could not copy the response."
+                );
+            }
+        }
+
+
+        /* =============================================================
+           DATE
+        ============================================================= */
+
+        function formatDate(dateString) {
+
+            try {
+
+                return new Intl.DateTimeFormat(
+                    undefined,
+                    {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric"
+                    }
+                ).format(
+                    new Date(dateString)
+                );
+
+            } catch {
+
+                return "";
+            }
+        }
+
+
+        /* =============================================================
+           ESCAPE HTML
+        ============================================================= */
+
+        function escapeHtml(value) {
+
+            return String(value ?? "")
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
+
+
+        /* =============================================================
+           SCROLL
+        ============================================================= */
+
         function scrollToBottom() {
-            const container = document.getElementById('chatContainer');
-            container.scrollTop = container.scrollHeight;
+
+            setTimeout(
+                () => {
+
+                    window.scrollTo({
+
+                        top:
+                            document.body.scrollHeight,
+
+                        behavior:
+                            "smooth"
+
+                    });
+
+                },
+                50
+            );
         }
 
-        function escapeHtml(text) {
-            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
 
-        function formatOutput(text) {
-            let formatted = escapeHtml(text);
-            formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            formatted = formatted.replace(/\n/g, '<br>');
-            return formatted;
-        }
+        /* =============================================================
+           INITIALIZATION
+        ============================================================= */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                showPage("home");
+
+            }
+        );
     </script>
+
 </body>
 
 </html>
